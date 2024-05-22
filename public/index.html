@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Connect data for ryu</title>
+  <script>
+    async function insertData() {
+      const name = document.getElementById('name').value;
+      const age = document.getElementById('age').value;
+      const grade = document.getElementById('grade').value;
+
+      const response = await fetch('/insert', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, age, grade }),
+      });
+
+      const result = await response.text();
+      alert(result);
+      loadData();
+    }
+
+    async function updateData() {
+      const id = document.getElementById('update-id').value;
+      const name = document.getElementById('update-name').value;
+      const age = document.getElementById('update-age').value;
+      const grade = document.getElementById('update-grade').value;
+
+      const response = await fetch('/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id, name, age, grade }),
+      });
+
+      const result = await response.text();
+      alert(result);
+      loadData();
+    }
+
+    async function deleteData() {
+      const id = document.getElementById('delete-id').value;
+
+      const response = await fetch('/delete', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ id }),
+      });
+
+      const result = await response.text();
+      alert(result);
+      loadData();
+    }
+
+    async function loadData() {
+      const response = await fetch('/students');
+      const students = await response.json();
+
+      const table = document.getElementById('students-table');
+      table.innerHTML = `
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Age</th>
+          <th>Grade</th>
+        </tr>
+      `;
+
+      students.forEach(student => {
+        table.innerHTML += `
+          <tr>
+            <td>${student._id}</td>
+            <td>${student.name}</td>
+            <td>${student.age}</td>
+            <td>${student.grade}</td>
+          </tr>
+        `;
+      });
+    }
+
+    window.onload = loadData;
+  </script>
+</head>
+<body>
+  <h1>MongoDB CRUD Operations</h1>
+
+  <h2>Insert Data</h2>
+  <form onsubmit="event.preventDefault(); insertData();">
+    <input type="text" id="name" placeholder="Name" required>
+    <input type="number" id="age" placeholder="Age" required>
+    <input type="text" id="grade" placeholder="Grade" required>
+    <button type="submit">Insert</button>
+  </form>
+
+  <h2>Update Data</h2>
+  <form onsubmit="event.preventDefault(); updateData();">
+    <input type="text" id="update-id" placeholder="ID" required>
+    <input type="text" id="update-name" placeholder="Name" required>
+    <input type="number" id="update-age" placeholder="Age" required>
+    <input type="text" id="update-grade" placeholder="Grade" required>
+    <button type="submit">Update</button>
+  </form>
+
+  <h2>Delete Data</h2>
+  <form onsubmit="event.preventDefault(); deleteData();">
+    <input type="text" id="delete-id" placeholder="ID" required>
+    <button type="submit">Delete</button>
+  </form>
+
+  <h2>Student List</h2>
+  <table id="students-table" border="1">
+    <tr>
+      <th>ID</th>
+      <th>Name</th>
+      <th>Age</th>
+      <th>Grade</th>
+    </tr>
+  </table>
+</body>
+</html>
